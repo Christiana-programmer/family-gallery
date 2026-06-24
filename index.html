@@ -638,12 +638,21 @@
         const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, { method: 'POST', body: formData });
         const data = await res.json();
         if (data.secure_url) {
-          galleryPhotos.unshift({
+          const photo = {
             url: data.secure_url,
             public_id: data.public_id,
             resource_type: resourceType,
             date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+          };
+          
+          // Save to shared database
+          await fetch('/.netlify/functions/get-photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(photo)
           });
+          
+          galleryPhotos.unshift(photo);
         }
       } catch (err) { console.error(err); }
       uploaded++;
