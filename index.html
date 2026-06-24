@@ -548,12 +548,22 @@
   let galleryPhotos  = [];
   let lightboxIndex  = 0;
 
-  function loadGallery() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    galleryPhotos = saved ? JSON.parse(saved) : [];
+  async function loadGallery() {
+    try {
+      const res = await fetch('/.netlify/functions/get-photos');
+      const data = await res.json();
+      galleryPhotos = data.map(photo => ({
+        url: photo.secure_url,
+        public_id: photo.public_id,
+        resource_type: photo.resource_type,
+        date: new Date(photo.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+      }));
+    } catch (err) {
+      console.error('Could not load photos:', err);
+      galleryPhotos = [];
+    }
     renderGallery();
   }
-
   function saveGallery() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(galleryPhotos));
   }
