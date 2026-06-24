@@ -553,10 +553,10 @@
       const res = await fetch('/.netlify/functions/get-photos');
       const data = await res.json();
       galleryPhotos = data.map(photo => ({
-        url: photo.secure_url,
+        url: photo.url,
         public_id: photo.public_id,
         resource_type: photo.resource_type,
-        date: new Date(photo.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+        date: photo.date
       }));
     } catch (err) {
       console.error('Could not load photos:', err);
